@@ -1,5 +1,5 @@
 {
-  "homepage":"https://european-identity-project.github.io/experimental-survey-income",
+  "homepage": "https://european-identity-project.github.io/experimental-survey-income",
   "name": "experimental-survey-income",
   "version": "0.1.0",
   "private": true,
@@ -11,9 +11,13 @@
     "@types/node": "^16.11.33",
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.3",
+    "nouislider": "^15.6.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
+    "survey-react-ui": "^1.9.28",
+    "survey-core": "latest",
+    "surveyjs-widgets": "latest",
     "typescript": "^4.6.4",
     "web-vitals": "^2.1.4"
   },
