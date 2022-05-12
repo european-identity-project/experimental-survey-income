@@ -1,16 +1,15 @@
 {
   "files": {
-    "main.css": "/experimental-survey-income/static/css/main.073c9b0a.css",
-    "main.js": "/experimental-survey-income/static/js/main.194d8df9.js",
+    "main.css": "/experimental-survey-income/static/css/main.8981ed50.css",
+    "main.js": "/experimental-survey-income/static/js/main.ae36734d.js",
     "static/js/787.9647ee6d.chunk.js": "/experimental-survey-income/static/js/787.9647ee6d.chunk.js",
-    "static/media/logo.svg": "/experimental-survey-income/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/experimental-survey-income/index.html",
-    "main.073c9b0a.css.map": "/experimental-survey-income/static/css/main.073c9b0a.css.map",
-    "main.194d8df9.js.map": "/experimental-survey-income/static/js/main.194d8df9.js.map",
+    "main.8981ed50.css.map": "/experimental-survey-income/static/css/main.8981ed50.css.map",
+    "main.ae36734d.js.map": "/experimental-survey-income/static/js/main.ae36734d.js.map",
     "787.9647ee6d.chunk.js.map": "/experimental-survey-income/static/js/787.9647ee6d.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.073c9b0a.css",
-    "static/js/main.194d8df9.js"
+    "static/css/main.8981ed50.css",
+    "static/js/main.ae36734d.js"
   ]
 }
