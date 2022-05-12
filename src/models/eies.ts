@@ -1,3 +1,5 @@
+import { text } from "stream/consumers";
+
 export const MODEL = {
   title: "European Identity Experimental Survey",
   logoFit: "none",
@@ -76,7 +78,7 @@ export const MODEL = {
           title: "Please, can you tell me your age?",
           isRequired: true,
           inputType: "number",
-          min: 16,
+          min: 18,
         },
         {
           type: "radiogroup",
@@ -110,9 +112,9 @@ export const MODEL = {
           type: "radiogroup",
           name: "educational-attainment",
           title:
-            "What is the highest level of education your mother successfully completed?",
+            "What is the highest level of education you successfully completed?",
           description:
-            "*NOTE:* These categories are just an example, they might be extended using real ISCED occupations",
+            "*NOTE:* These categories are just an example, they might be extended using real ISCED educational levels",
           isRequired: true,
           choices: [
             {
@@ -135,15 +137,54 @@ export const MODEL = {
           otherText: "Answer",
         },
         {
-          type: "boolean",
+          type: "radiogroup",
           name: "unemployed",
-          title: "Please, can you tell me if you are unemployed at the moment?",
+          title:
+            "Which of these descriptions applies to what you have been doing for the last 7 days?",
           isRequired: true,
+          choices: [
+            {
+              value: "1",
+              text: "In paid work as employee",
+            },
+            {
+              value: "2",
+              text: "In paid work self-employed",
+            },
+            {
+              value: "3",
+              text: "In paid work for a family business",
+            },
+            {
+              value: "4",
+              text: "Unemployed looking for a job",
+            },
+            {
+              value: "5",
+              text: "Unemployed not looking for a job",
+            },
+            {
+              value: "6",
+              text: "Permanently sick or disabled",
+            },
+            {
+              value: "7",
+              text: "Retired",
+            },
+            {
+              value: "8",
+              text: "Community or military service",
+            },
+            {
+              value: "9",
+              text: "Housework, looking after children or others",
+            },
+          ],
         },
         {
           type: "radiogroup",
           name: "occupation",
-          visibleIf: "{unemployed} = false",
+          visibleIf: "{unemployed} < 4",
           title:
             "Which of the descriptions below best describes the sort of work you do?",
           description:
@@ -189,19 +230,40 @@ export const MODEL = {
           ],
           otherText: "Answer",
         },
+      ],
+      title: "Socioeconomic background",
+      description:
+        "In this section we ask respondents some questions related to their socioeconomic characteristics",
+      questionsOrder: "initial",
+    },
+    {
+      name: "eu-knowledge",
+      elements: [
         {
           type: "text",
-          name: "ue-kownledge",
+          name: "number-countries",
           title: "How many countries currently belong to the European Union?",
           description: "Please, answer with a number",
           isRequired: true,
           inputType: "number",
           min: 0,
         },
+        {
+          type: "boolean",
+          name: "switzerland-memeber",
+          title: "Is Switzerland an EU member state?",
+          isRequired: true,
+        },
+        {
+          type: "boolean",
+          name: "serbia-memeber",
+          title: "Is Serbia an EU member state?",
+          isRequired: true,
+        },
       ],
-      title: "Socioeconomic background",
+      title: "Knowledge about the EU",
       description:
-        "In this section we ask you some questions related to your socioeconomic characteristics",
+        "In this section we ask respondents some questions about the EU.",
       questionsOrder: "initial",
     },
     {
@@ -209,7 +271,7 @@ export const MODEL = {
       elements: [
         {
           type: "text",
-          name: "question5",
+          name: "country-position",
           title:
             "Considering the EU is currently formed by 27 Member States, what position do you think {country} holds in a ranking from richest (1) to poorest (27) country?",
           isRequired: true,
@@ -219,14 +281,14 @@ export const MODEL = {
           step: 1,
         },
         {
-          type: "text",
-          name: "subjective-income-1",
+          type: "nouislider",
+          name: "subjective-income-within-country",
           title:
             "What percentage of households in {country} do you think earn less than yours?",
           isRequired: true,
         },
         {
-          type: "text",
+          type: "nouislider",
           name: "subjective-income-2",
           title:
             "What percentage of households in the EU do you think earn less than yours?",
@@ -235,7 +297,7 @@ export const MODEL = {
       ],
       title: "Subjective income",
       description:
-        "In this section we ask you some questions regarding your income relative to your country and the EU.",
+        "In this section we ask respondents some questions regarding their income relative to their country and the EU.",
       questionsOrder: "random",
     },
     {
@@ -256,8 +318,315 @@ export const MODEL = {
       ],
       title: "Objective income",
       description:
-        "In this section we ask you about your specific household income compared to your country's households as well as EU households.",
+        "In this section we ask respondents about your specific household income compared to their country's households as well as EU households.",
       questionsOrder: "random",
+    },
+    {
+      name: "within-country-treatment",
+      title: "Within Country Treatment",
+      description: "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
+      elements: [
+        {
+          type: "nouislider",
+          name: "subjective-within-countries-answer",
+          title: "This is what you answered when we ask you about what percentage of households earns less than yours.",
+          value: "{subjective-income-within-country}",
+          readOnly: true,
+        },
+        {
+          type: "nouislider",
+          name: "subjective-within-countries-answer",
+          title: "According to your subsequent answers we estimate that you earn less than the following percentage of households.",
+          value: "{decile}",
+          readOnly: true,
+        },
+      ],
+    },
+    {
+      name: "within-eu-treatment",
+      title: "Within EU Treatment",
+      description: "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
+      
+    },
+    {
+      name: "cross-country-treatment",
+      title: "Cross-country Treatment",
+      description: "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
+      elements: [
+        {
+          type:'text',
+          name: 'country-position-check',
+          title: "Previously, you placed {country} in the following position:",
+          value: "{country-position}",
+          readOnly: true,
+        },
+        {
+          type:'text',
+          name: 'country-position-check',
+          title: "According to EUROSTAT data, {country} is ranked in the following position:",
+          value: "{eurostat-country-position}",
+          readOnly: true,
+        }
+      ]
+    },
+    {
+      name: "main-outcomes",
+      title: "European and Redistributive Preferences",
+      elements: [
+        {
+          type: "rating",
+          name: "unification",
+          title:
+            "Now thinking about the European Union, some say European unification should go further. Others say it has already gone too far. What number on the following scale best describes your position?",
+          isRequired: true,
+          rateMax: 10,
+          minRateDescription: "European unification has gone too far",
+          maxRateDescription: "European unification should go further",
+          // displayRateDescriptionsAsExtremeItems: true,
+        },
+        {
+          type: "rating",
+          name: "national-redistribution",
+          title:
+            "Please say to what extent you agree or disagree with each of the following statements. The government should take measures to reduce differences in income levels.",
+          isRequired: true,
+          rateMin: 1,
+          rateMax: 5,
+          minRateDescription: "Agree strongly",
+          maxRateDescription: "Disagree strongly",
+          // displayRateDescriptionsAsExtremeItems: true,
+        },
+        {
+          type: "radiogroup",
+          name: "membership-referendum",
+          title:
+            "Imagine there were a referendum in {country} tomorrow about membership of the European Union. Would you vote for {country} to remain a member of the European Union or to leave the European Union?",
+          isRequired: true,
+          choices: [
+            {
+              value: "1",
+              text: "Remain a member of the European Union",
+            },
+            {
+              value: "2",
+              text: "Leave the European Union",
+            },
+            {
+              value: "3",
+              text: "Would submit a blank ballot paper",
+            },
+            {
+              value: "4",
+              text: "Would spoil the ballot paper",
+            },
+            {
+              value: "5",
+              text: "Would not vote",
+            },
+            {
+              value: "6",
+              text: "Not eligible to vote",
+            },
+          ],
+          otherText: "Answer",
+        },
+        {
+          type: "rating",
+          name: "eu-wide-social-benefit",
+          title:
+            "It has been proposed that there should be a European Union-wide social benefit scheme for all poor people. The purpose is to guarantee a minimum standard of living for all people in the European Union. The scheme would require richer European Union countries to pay more into such a scheme than poorer European Union countries. Overall, would you be against or in favor of having such a European Union-wide social benefit scheme?",
+          isRequired: true,
+          rateMin: 1,
+          rateMax: 4,
+          minRateDescription: "Strongly against",
+          maxRateDescription: "Strongly in favour",
+          // displayRateDescriptionsAsExtremeItems: true,
+        },
+      ],
+    },
+    {
+      name: "further-outcomes",
+      title: "Political attitudes and behaviors in an European context",
+      elements: [
+        {
+          type: "rating",
+          name: "emotional-attachment",
+          title:
+            "People might feel different levels of attachment to the country where they live and to Europe. How emotionally attached do you feel to Europe?",
+          isRequired: true,
+          rateMin: 0,
+          rateMax: 10,
+          minRateDescription: "Not at all emotionally attached",
+          maxRateDescription: "Very emotionally attached",
+        },
+        {
+          type: "rating",
+          name: "immigration-economy",
+          title:
+            "Would you say it is generally bad or good for {country} economy that people come to live here from other countries?",
+          isRequired: true,
+          rateMin: 0,
+          rateMax: 10,
+          minRateDescription: "Bad for the economy",
+          maxRateDescription: "Good for the economy",
+        },
+        {
+          type: "rating",
+          name: "immigration-education",
+          title:
+            "How important do you think each of these things should be in deciding whether someone born, brought up and living outside {country} should be able to come and live here? Firstly, how important should it be for you to have good educational qualifications?",
+          isRequired: true,
+          rateMin: 0,
+          rateMax: 10,
+          minRateDescription: "Not at all important",
+          maxRateDescription: "Extremely important",
+        },
+        {
+          type: "rating",
+          name: "immigration-skills",
+          title:
+            "Secondly, how important should it be for you to have work skills that {country} needs?",
+          isRequired: true,
+          rateMin: 0,
+          rateMax: 10,
+          minRateDescription: "Not at all important",
+          maxRateDescription: "Extremely important",
+        },
+        {
+          type: "radiogroup",
+          name: "participation-future-national",
+          title:
+            "Imagine that {country} national election is held tomorrow. Would you vote in that election?",
+          isRequired: true,
+          choices: [
+            {
+              value: "1",
+              text: "Yes",
+            },
+            {
+              value: "2",
+              text: "No",
+            },
+            {
+              value: "3",
+              text: "Not eligible to vote",
+            },
+          ],
+        },
+        {
+          type: "text",
+          name: "party-national-choice",
+          title: "Which party would you vote for in that election?",
+          description: "[Country-specific (question and) codes.]",
+          visibleIf: "{participation-future-national} == 1",
+        },
+        {
+          type: "radiogroup",
+          name: "participation-future-eu",
+          title:
+            "Imagine that European elections are held tomorrow. Would you vote in that election?",
+          isRequired: true,
+          choices: [
+            {
+              value: "1",
+              text: "Yes",
+            },
+            {
+              value: "2",
+              text: "No",
+            },
+            {
+              value: "3",
+              text: "Not eligible to vote",
+            },
+          ],
+        },
+        {
+          type: "text",
+          name: "party-eu-choice",
+          title: "Which party would you vote for in that election?",
+          description: "[Country-specific (question and) codes.]",
+          visibleIf: "{participation-future-eu} == 1",
+        },
+      ],
+    },
+    {
+      name: "manipulation-checks",
+      title: "Manipulation checks",
+      description:
+        "In order to test the underlying causal mechanism and and rule out alternative explanations (cultural arguments and uneffective treatments)",
+      elements: [
+        {
+          type:'text',
+          title:'How important are the following topics for you? (add topics)',
+          inputType: "number",
+          isRequired: true,
+          min:0,
+          max:100
+        },
+        {
+          type: "rating",
+          name: "emotional-attachment-country",
+          title:
+            "People might feel different levels of attachment to the country where they live and to Europe. How emotionally attached do you feel to {country}?",
+          isRequired: true,
+          rateMin: 0,
+          rateMax: 10,
+          minRateDescription: "Not at all emotionally attached",
+          maxRateDescription: "Very emotionally attached",
+        },
+        {
+          type: "rating",
+          name: "immigration-cristianity",
+          title:
+            "How important do you think each of these things should be in deciding whether someone born, brought up and living outside {country} should be able to come and live here? How important should it be for you to have good educational qualifications?",
+          isRequired: true,
+          rateMin: 0,
+          rateMax: 10,
+          minRateDescription: "Not at all important",
+          maxRateDescription: "Extremely important",
+        },
+        {
+          type: "rating",
+          name: "cultural-effect-immigration",
+          title:
+            "Would you say that {country} cultural life is generally undermined or enriched by people come to live here from other countries?",
+          isRequired: true,
+          rateMin: 0,
+          rateMax: 10,
+          minRateDescription: "Cultural live undermined",
+          maxRateDescription: "Cultural live enriched",
+        },
+      ],
+    },
+    {
+      name: "manipulation-checks-treatment-info",
+      title: "Treatments' information checks",
+      elements: [
+        {
+          type: "text",
+          name: "number-countries-check",
+          title: "How many countries currently belong to the European Union?",
+          description: "Please, answer with a number",
+          isRequired: true,
+          inputType: "number",
+          min: 0,
+        },
+        {
+          type: "nouislider",
+          name: "subjective-income-within-country",
+          title:
+            "According to the estimation we previously provided, what percentage of households in {country} earn less than yours?",
+          isRequired: true,
+        },
+        {
+          type: "nouislider",
+          name: "subjective-income-within-country",
+          title:
+            "According to the estimation we previously provided, what percentage of households in {country} earn less than yours?",
+          isRequired: true,
+        },
+      ],
     },
   ],
   // calculatedValues: [
