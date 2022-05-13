@@ -1,8 +1,15 @@
-import { text } from "stream/consumers";
+const range = {
+  min: [0],
+  "10%": [10, 10],
+  "50%": [50, 50],
+  max: [100],
+};
 
 export const MODEL = {
   title: "European Identity Experimental Survey",
-  logoFit: "none",
+  logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1280px-Flag_of_Europe.svg.png",
+  logoWidth: "120px",
+  logoHeight: "55px",
   logoPosition: "right",
   pages: [
     {
@@ -45,7 +52,7 @@ export const MODEL = {
             "Italy",
             "Latvia",
             "Lithuania",
-            "Luxemburg",
+            "Luxembourg",
             "Malta",
             "Netherlands",
             "Poland",
@@ -106,7 +113,6 @@ export const MODEL = {
           rateMax: 10,
           minRateDescription: "Extreme Left",
           maxRateDescription: "Extreme Right",
-          displayRateDescriptionsAsExtremeItems: true,
         },
         {
           type: "radiogroup",
@@ -236,36 +242,36 @@ export const MODEL = {
         "In this section we ask respondents some questions related to their socioeconomic characteristics",
       questionsOrder: "initial",
     },
-    {
-      name: "eu-knowledge",
-      elements: [
-        {
-          type: "text",
-          name: "number-countries",
-          title: "How many countries currently belong to the European Union?",
-          description: "Please, answer with a number",
-          isRequired: true,
-          inputType: "number",
-          min: 0,
-        },
-        {
-          type: "boolean",
-          name: "switzerland-memeber",
-          title: "Is Switzerland an EU member state?",
-          isRequired: true,
-        },
-        {
-          type: "boolean",
-          name: "serbia-memeber",
-          title: "Is Serbia an EU member state?",
-          isRequired: true,
-        },
-      ],
-      title: "Knowledge about the EU",
-      description:
-        "In this section we ask respondents some questions about the EU.",
-      questionsOrder: "initial",
-    },
+    // {
+    //   name: "eu-knowledge",
+    //   elements: [
+    //     {
+    //       type: "text",
+    //       name: "number-countries",
+    //       title: "How many countries currently belong to the European Union?",
+    //       description: "Please, answer with a number",
+    //       isRequired: true,
+    //       inputType: "number",
+    //       min: 0,
+    //     },
+    //     {
+    //       type: "boolean",
+    //       name: "switzerland-memeber",
+    //       title: "Is Switzerland an EU member state?",
+    //       isRequired: true,
+    //     },
+    //     {
+    //       type: "boolean",
+    //       name: "serbia-memeber",
+    //       title: "Is Serbia an EU member state?",
+    //       isRequired: true,
+    //     },
+    //   ],
+    //   title: "Knowledge about the EU",
+    //   description:
+    //     "In this section we ask respondents some questions about the EU.",
+    //   questionsOrder: "initial",
+    // },
     {
       name: "subjective-income",
       elements: [
@@ -285,13 +291,27 @@ export const MODEL = {
           name: "subjective-income-within-country",
           title:
             "What percentage of households in {country} do you think earn less than yours?",
+          connect: true,
+          rangeMin: 0,
+          rangeMax: 100,
+          pipsMode: "values",
+          pipsDensity: 10,
+          pipsValues: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+          behaviour: "tap",
           isRequired: true,
         },
         {
           type: "nouislider",
-          name: "subjective-income-2",
+          name: "subjective-income-across-country",
           title:
             "What percentage of households in the EU do you think earn less than yours?",
+          connect: true,
+          rangeMin: 0,
+          rangeMax: 100,
+          pipsMode: "values",
+          pipsDensity: 10,
+          pipsValues: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+          behaviour: "tap",
           isRequired: true,
         },
       ],
@@ -306,13 +326,6 @@ export const MODEL = {
         {
           type: "boolean",
           name: "objective-income-check-country",
-          title: "",
-          isRequired: true,
-        },
-        {
-          type: "boolean",
-          name: "question1",
-          title: "",
           isRequired: true,
         },
       ],
@@ -322,22 +335,38 @@ export const MODEL = {
       questionsOrder: "random",
     },
     {
+      name: "objective-income",
+      elements: [
+        {
+          type: "boolean",
+          name: "objective-income-check-eu",
+          isRequired: true,
+        },
+      ],
+      title: "Objective income",
+      description:
+        "In this section we ask respondents about your specific household income compared to their country's households as well as EU households.",
+      questionsOrder: "random",
+    },
+
+    {
       name: "within-country-treatment",
       title: "Within Country Treatment",
-      description: "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
+      description:
+        "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
       elements: [
         {
           type: "nouislider",
           name: "subjective-within-countries-answer",
-          title: "This is what you answered when we ask you about what percentage of households earns less than yours.",
-          value: "{subjective-income-within-country}",
+          title:
+            "This is what you answered when we asked you about what percentage of households earns less than yours.",
           readOnly: true,
         },
         {
           type: "nouislider",
-          name: "subjective-within-countries-answer",
-          title: "According to your subsequent answers we estimate that you earn less than the following percentage of households.",
-          value: "{decile}",
+          name: "subjective-across-countries-answer",
+          title:
+            "According to your subsequent answers we estimate that you earn less than the following percentage of households.",
           readOnly: true,
         },
       ],
@@ -345,29 +374,48 @@ export const MODEL = {
     {
       name: "within-eu-treatment",
       title: "Within EU Treatment",
-      description: "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
-      
+      description:
+        "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
+      elements: [
+        {
+          type: "nouislider",
+          name: "subjective-within-eu-answer",
+          title:
+            "This is what you answered when we ask you about what percentage of households earns less than yours.",
+          readOnly: true,
+        },
+        {
+          type: "nouislider",
+          name: "subjective-across-eu-answer",
+          title:
+            "According to your subsequent answers we estimate that you earn less than the following percentage of households.",
+          readOnly: true,
+        },
+      ],
     },
     {
       name: "cross-country-treatment",
       title: "Cross-country Treatment",
-      description: "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
+      description:
+        "This is our informational treatment. We show the respondents their answers and the estimated objective position they are placed.",
       elements: [
         {
-          type:'text',
-          name: 'country-position-check',
+          type: "text",
+          name: "country-position-answer",
           title: "Previously, you placed {country} in the following position:",
+          inputType: "number",
           value: "{country-position}",
           readOnly: true,
         },
         {
-          type:'text',
-          name: 'country-position-check',
-          title: "According to EUROSTAT data, {country} is ranked in the following position:",
+          type: "text",
+          name: "country-position-eurostat",
+          title:
+            "According to EUROSTAT data, {country} is ranked in the following position:",
           value: "{eurostat-country-position}",
           readOnly: true,
-        }
-      ]
+        },
+      ],
     },
     {
       name: "main-outcomes",
@@ -382,7 +430,6 @@ export const MODEL = {
           rateMax: 10,
           minRateDescription: "European unification has gone too far",
           maxRateDescription: "European unification should go further",
-          // displayRateDescriptionsAsExtremeItems: true,
         },
         {
           type: "rating",
@@ -394,7 +441,6 @@ export const MODEL = {
           rateMax: 5,
           minRateDescription: "Agree strongly",
           maxRateDescription: "Disagree strongly",
-          // displayRateDescriptionsAsExtremeItems: true,
         },
         {
           type: "radiogroup",
@@ -440,7 +486,6 @@ export const MODEL = {
           rateMax: 4,
           minRateDescription: "Strongly against",
           maxRateDescription: "Strongly in favour",
-          // displayRateDescriptionsAsExtremeItems: true,
         },
       ],
     },
@@ -557,12 +602,12 @@ export const MODEL = {
         "In order to test the underlying causal mechanism and and rule out alternative explanations (cultural arguments and uneffective treatments)",
       elements: [
         {
-          type:'text',
-          title:'How important are the following topics for you? (add topics)',
+          type: "text",
+          title: "How important are the following topics for you? (add topics)",
           inputType: "number",
           isRequired: true,
-          min:0,
-          max:100
+          min: 0,
+          max: 100,
         },
         {
           type: "rating",
@@ -614,33 +659,35 @@ export const MODEL = {
         },
         {
           type: "nouislider",
-          name: "subjective-income-within-country",
+          name: "subjective-income-country-check",
           title:
             "According to the estimation we previously provided, what percentage of households in {country} earn less than yours?",
+          connect: true,
+          rangeMin: 0,
+          rangeMax: 100,
+          pipsMode: "values",
+          pipsDensity: 10,
+          pipsValues: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+          behaviour: "tap",
           isRequired: true,
         },
         {
           type: "nouislider",
-          name: "subjective-income-within-country",
+          name: "subjective-income-eu-check",
           title:
-            "According to the estimation we previously provided, what percentage of households in {country} earn less than yours?",
+            "According to the estimation we previously provided, what percentage of households in the EU earn less than yours?",
+          connect: true,
+          rangeMin: 0,
+          rangeMax: 100,
+          pipsMode: "values",
+          pipsDensity: 10,
+          pipsValues: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+          behaviour: "tap",
           isRequired: true,
         },
       ],
     },
   ],
-  // calculatedValues: [
-  //   {
-  //     name: "national_decile",
-  //     expression: "randomDecile({country})",
-  //     includeIntoResult: true,
-  //   },
-  //   {
-  //     name: "eu_decile",
-  //     expression: "randomDecile({country}, true)",
-  //     includeIntoResult: true,
-  //   },
-  // ],
   showPrevButton: false,
   showQuestionNumbers: "off",
   showProgressBar: "top",
