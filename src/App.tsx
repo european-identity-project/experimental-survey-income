@@ -93,11 +93,13 @@ function checkDecile(less: boolean, eu: boolean = false) {
 function askAgain(page: any, decile: any, eu: boolean = false) {
   if (eu) {
     const question = page.addNewQuestion("boolean", "eu_decile_" + decile);
-
+    question.labelTrue = "More";
+    question.labelFalse = "Less";
     question.title = "Do your household earn more or less than " + decile + "?";
   } else {
     const question = page.addNewQuestion("boolean", "decile_" + decile);
-
+    question.labelTrue = "More";
+    question.labelFalse = "Less";
     question.title = "Do your household earn more or less than " + decile + "?";
   }
 }

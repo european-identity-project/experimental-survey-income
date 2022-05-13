@@ -178,6 +178,10 @@ export const MODEL = {
               value: "9",
               text: "Housework, looking after children or others",
             },
+            {
+              value: "10",
+              text: "In education",
+            },
           ],
         },
         {
@@ -235,36 +239,36 @@ export const MODEL = {
         "In this section we ask respondents some questions related to their socioeconomic characteristics",
       questionsOrder: "initial",
     },
-    // {
-    //   name: "eu-knowledge",
-    //   elements: [
-    //     {
-    //       type: "text",
-    //       name: "number-countries",
-    //       title: "How many countries currently belong to the European Union?",
-    //       description: "Please, answer with a number",
-    //       isRequired: true,
-    //       inputType: "number",
-    //       min: 0,
-    //     },
-    //     {
-    //       type: "boolean",
-    //       name: "switzerland-memeber",
-    //       title: "Is Switzerland an EU member state?",
-    //       isRequired: true,
-    //     },
-    //     {
-    //       type: "boolean",
-    //       name: "serbia-memeber",
-    //       title: "Is Serbia an EU member state?",
-    //       isRequired: true,
-    //     },
-    //   ],
-    //   title: "Knowledge about the EU",
-    //   description:
-    //     "In this section we ask respondents some questions about the EU.",
-    //   questionsOrder: "initial",
-    // },
+    {
+      name: "eu-knowledge",
+      elements: [
+        {
+          type: "text",
+          name: "number-countries",
+          title: "How many countries currently belong to the European Union?",
+          description: "Please, answer with a number",
+          isRequired: true,
+          inputType: "number",
+          min: 0,
+        },
+        {
+          type: "boolean",
+          name: "switzerland-memeber",
+          title: "Is Switzerland an EU member state?",
+          isRequired: true,
+        },
+        {
+          type: "boolean",
+          name: "serbia-memeber",
+          title: "Is Serbia an EU member state?",
+          isRequired: true,
+        },
+      ],
+      title: "Knowledge about the EU",
+      description:
+        "In this section we ask respondents some questions about the EU.",
+      questionsOrder: "initial",
+    },
     {
       name: "subjective-income",
       elements: [
@@ -320,6 +324,8 @@ export const MODEL = {
           type: "boolean",
           name: "objective-income-check-country",
           isRequired: true,
+          labelTrue: "More",
+          labelFalse: "Less",
         },
       ],
       title: "Objective income",
@@ -328,12 +334,14 @@ export const MODEL = {
       questionsOrder: "random",
     },
     {
-      name: "objective-income",
+      name: "objective-income-2",
       elements: [
         {
           type: "boolean",
           name: "objective-income-check-eu",
           isRequired: true,
+          labelTrue: "More",
+          labelFalse: "Less",
         },
       ],
       title: "Objective income",
