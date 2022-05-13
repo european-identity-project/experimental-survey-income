@@ -1,10 +1,3 @@
-const range = {
-  min: [0],
-  "10%": [10, 10],
-  "50%": [50, 50],
-  max: [100],
-};
-
 export const MODEL = {
   title: "European Identity Experimental Survey",
   logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1280px-Flag_of_Europe.svg.png",
