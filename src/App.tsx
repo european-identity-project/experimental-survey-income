@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import * as SurveyCore from "survey-core";
-import { StylesManager, Model } from "survey-core";
+import { StylesManager, Model, FunctionFactory } from "survey-core";
 import { Survey } from "survey-react-ui";
 import { MODEL } from "./models/eies";
 import { country_data, eu_data } from "./data/deciles_NAC";
@@ -19,6 +19,15 @@ let eu_num: number | null = null;
 let country = "";
 let value: any = null;
 
+function checkNumber(number: number) {
+  if (number % 10) {
+    return true;
+  } else {
+    return false;
+  }
+}
+FunctionFactory.Instance.register("checkNumber", checkNumber);
+
 function checkDecile(less: boolean, eu: boolean = false) {
   let decile;
 
@@ -34,7 +43,7 @@ function checkDecile(less: boolean, eu: boolean = false) {
       decile = data[country as keyof Object]["D7" as keyof Object];
       eu_num = 7;
       return decile.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    } else if (eu_num === 3 || eu_num === 7 || eu_num === 2) {
+    } else if (eu_num === 3 || eu_num === 7) {
       if (less) {
         decile =
           data[country as keyof Object][("D" + (eu_num - 1)) as keyof Object];
@@ -46,6 +55,23 @@ function checkDecile(less: boolean, eu: boolean = false) {
         eu_num++;
         return decile.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       }
+    } else if (num === 2) {
+      if (less) {
+        decile =
+          data[country as keyof Object][("D" + (num - 1)) as keyof Object];
+        num--;
+        return decile.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+      value = 3;
+      return value;
+    } else if (num === 8) {
+      if (less) {
+        value = 8;
+        return value;
+      }
+      decile = data[country as keyof Object][("D" + (num + 1)) as keyof Object];
+      num++;
+      return decile.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     } else {
       // Decile determined:
       if (less) {
@@ -66,7 +92,7 @@ function checkDecile(less: boolean, eu: boolean = false) {
       decile = data[country as keyof Object]["D7" as keyof Object];
       num = 7;
       return decile.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    } else if (num === 3 || num === 7 || num === 2) {
+    } else if (num === 3 || num === 7) {
       if (less) {
         decile =
           data[country as keyof Object][("D" + (num - 1)) as keyof Object];
@@ -78,6 +104,23 @@ function checkDecile(less: boolean, eu: boolean = false) {
         num++;
         return decile.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       }
+    } else if (num === 2) {
+      if (less) {
+        decile =
+          data[country as keyof Object][("D" + (num - 1)) as keyof Object];
+        num--;
+        return decile.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+      value = 3;
+      return value;
+    } else if (num === 8) {
+      if (less) {
+        value = 8;
+        return value;
+      }
+      decile = data[country as keyof Object][("D" + (num + 1)) as keyof Object];
+      num++;
+      return decile.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     } else {
       // Decile determined:
       if (less) {
@@ -164,12 +207,27 @@ function App() {
   let answered: boolean = false;
   survey.onValueChanged.add(function (survey: any, options: any) {
     if (options.name !== "objective-income-check-country") return;
-    if (!answered) {
+    if (answered) {
+      num = null;
+      for (let dec in country_data[country as keyof Object]) {
+        const deci = country_data[country as keyof Object][dec as keyof Object]
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const q = survey.getQuestionByName("decile_" + deci);
+        const page = survey.currentPage;
+        page.removeQuestion(q);
+      }
       const page = survey.currentPage;
 
       decile = checkDecile(!options.question.value) as string;
       askAgain(page, decile);
+      return;
     }
+
+    const page = survey.currentPage;
+
+    decile = checkDecile(!options.question.value) as string;
+    askAgain(page, decile);
     answered = true;
   });
 
@@ -177,13 +235,29 @@ function App() {
   let answered_eu: boolean = false;
   survey.onValueChanged.add(function (survey: any, options: any) {
     if (options.name !== "objective-income-check-eu") return;
-
-    if (!answered_eu) {
+    if (answered_eu) {
+      num = null;
+      for (let dec in eu_data[country as keyof Object]) {
+        const deci = eu_data[country as keyof Object][dec as keyof Object]
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const q = survey.getQuestionByName("eu_decile_" + deci);
+        const page = survey.currentPage;
+        page.removeQuestion(q);
+      }
       const page = survey.currentPage;
 
-      decile = checkDecile(!options.question.value, true) as string;
-      askAgain(page, decile, true);
+      decile = checkDecile(!options.question.value) as string;
+      askAgain(page, decile);
+      return;
     }
+    const page = survey.currentPage;
+
+    if (!answered_eu) {
+      value = null;
+    }
+    decile = checkDecile(!options.question.value, true) as string;
+    askAgain(page, decile, true);
     answered_eu = true;
   });
 
@@ -204,10 +278,10 @@ function App() {
     }
   });
 
-  // On change in country decile answer, it checks decile and if not determined, asks again:
+  // On change in eu decile answer, it checks decile and if not determined, asks again:
   survey.onValueChanged.add(function (survey: any, options: any) {
     if (options.name !== "eu_decile_" + decile) return;
-
+    console.log("here");
     const page = survey.currentPage;
 
     decile = checkDecile(!options.question.value, true);
@@ -226,7 +300,7 @@ function App() {
     alert(results);
   }, []);
 
-  survey.onComplete.add(alertResults);
+  // survey.onComplete.add(alertResults);
 
   return <Survey model={survey} />;
 }

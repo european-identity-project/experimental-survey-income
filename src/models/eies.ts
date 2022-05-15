@@ -59,6 +59,13 @@ export const MODEL = {
           choicesOrder: "asc",
         },
         {
+          type: "text",
+          name: "region",
+          title: "Please, tell me the name of your Region",
+          visibleIf: "{country} notempty",
+          description: "[Country-specific (question and) codes.]",
+        },
+        {
           type: "boolean",
           name: "native",
           visibleIf: "{country} notempty",
@@ -233,6 +240,67 @@ export const MODEL = {
           ],
           otherText: "Answer",
         },
+        {
+          type: "text",
+          name: "number-of-inhabitants-in-household",
+          title:
+            "Including yourself, how many people –including children– live here regularly as members of this household?",
+          inputType: "number",
+          min: 0,
+        },
+        {
+          type: "radiogroup",
+          name: "vote-last-election",
+          title:
+            "Some people don't vote nowadays for one reason or another. Did you vote in the last national election in {country}?",
+          choices: [
+            {
+              value: "1",
+              text: "Yes",
+            },
+            {
+              value: "2",
+              text: "No",
+            },
+            {
+              value: "3",
+              text: "Not eligible to vote",
+            },
+          ],
+        },
+        {
+          type: "text",
+          name: "vote-choice-last-election",
+          title: "Which party did you vote for in that election?",
+          description: "[Country-specific (question and) codes.]",
+          visibleIf: "{vote-last-election} = 1",
+        },
+        {
+          type: "radiogroup",
+          name: "vote-last-eu-election",
+          title: "Did you vote in the last European elections in May, 2019?",
+          choices: [
+            {
+              value: "1",
+              text: "Yes",
+            },
+            {
+              value: "2",
+              text: "No",
+            },
+            {
+              value: "3",
+              text: "Not eligible to vote",
+            },
+          ],
+        },
+        {
+          type: "text",
+          name: "vote-choice-last-eu-election",
+          title: "Which party did you vote for in that election?",
+          description: "[Country-specific (question and) codes.]",
+          visibleIf: "{vote-last-eu-election} = 1",
+        },
       ],
       title: "Socioeconomic background",
       description:
@@ -296,6 +364,13 @@ export const MODEL = {
           pipsValues: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
           behaviour: "tap",
           isRequired: true,
+          validators: [
+            {
+              type: "expression",
+              text: "Your answer cannot be a number ending in 0",
+              expression: "checkNumber({subjective-income-within-country})",
+            },
+          ],
         },
         {
           type: "nouislider",
@@ -310,6 +385,13 @@ export const MODEL = {
           pipsValues: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
           behaviour: "tap",
           isRequired: true,
+          validators: [
+            {
+              type: "expression",
+              text: "Your answer cannot be a number ending in 0",
+              expression: "checkNumber({subjective-income-across-country})",
+            },
+          ],
         },
       ],
       title: "Subjective income",
@@ -600,15 +682,60 @@ export const MODEL = {
       name: "manipulation-checks",
       title: "Manipulation checks",
       description:
-        "In order to test the underlying causal mechanism and and rule out alternative explanations (cultural arguments and uneffective treatments)",
+        "In order to test the underlying causal mechanism and rule out alternative explanations (cultural arguments and uneffective treatments)",
       elements: [
         {
-          type: "text",
-          title: "How important are the following topics for you? (add topics)",
-          inputType: "number",
-          isRequired: true,
-          min: 0,
-          max: 100,
+          type: "panel",
+          name: "manipulations-checks-topics",
+          title: "How important are the following topics for you?",
+          description: "Answer with a number from 0 to 100 for each topic",
+          elements: [
+            {
+              type: "text",
+              name: "immigration",
+              title: "Immigration",
+              isRequired: true,
+              inputType: "number",
+              min: 0,
+              max: 100,
+            },
+            {
+              type: "text",
+              name: "eu",
+              title: "European Union",
+              isRequired: true,
+              inputType: "number",
+              min: 0,
+              max: 100,
+            },
+            {
+              type: "text",
+              name: "climate-change",
+              title: "Climate Change",
+              isRequired: true,
+              inputType: "number",
+              min: 0,
+              max: 100,
+            },
+            {
+              type: "text",
+              name: "family-values",
+              title: "Family Values",
+              isRequired: true,
+              inputType: "number",
+              min: 0,
+              max: 100,
+            },
+            {
+              type: "text",
+              name: "democracy",
+              title: "Democracy",
+              isRequired: true,
+              inputType: "number",
+              min: 0,
+              max: 100,
+            },
+          ],
         },
         {
           type: "rating",
@@ -625,7 +752,7 @@ export const MODEL = {
           type: "rating",
           name: "immigration-cristianity",
           title:
-            "How important do you think each of these things should be in deciding whether someone born, brought up and living outside {country} should be able to come and live here? How important should it be for you to have good educational qualifications?",
+            "How important do you think each of these things should be in deciding whether someone born, brought up and living outside {country} should be able to come and live here? How important should it be for you to come from a Christian background?",
           isRequired: true,
           rateMin: 0,
           rateMax: 10,
@@ -648,6 +775,8 @@ export const MODEL = {
     {
       name: "manipulation-checks-treatment-info",
       title: "Treatments' information checks",
+      description:
+        "Here we check again if people have learned thanks to the informational treatments",
       elements: [
         {
           type: "text",
@@ -671,6 +800,13 @@ export const MODEL = {
           pipsValues: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
           behaviour: "tap",
           isRequired: true,
+          validators: [
+            {
+              type: "expression",
+              text: "Your answer cannot be a number ending in 0",
+              expression: "checkNumber({subjective-income-country-check)",
+            },
+          ],
         },
         {
           type: "nouislider",
@@ -685,6 +821,24 @@ export const MODEL = {
           pipsValues: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
           behaviour: "tap",
           isRequired: true,
+          validators: [
+            {
+              type: "expression",
+              text: "Your answer cannot be a number ending in 0",
+              expression: "checkNumber({subjective-income-eu-check})",
+            },
+          ],
+        },
+        {
+          type: "text",
+          name: "country-position-check",
+          title:
+            "According to the estimation we previously provided, what position {country} holds in a ranking from richest to poorest country?",
+          isRequired: true,
+          inputType: "number",
+          min: 1,
+          max: 27,
+          step: 1,
         },
       ],
     },
